@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+        <record id="my_sequence_id" model="ir.sequence">
+            <field name="name">My Sequence</field>
+            <field name="code">my_sequence_code</field>
+            <field name="prefix">AUC</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+        </record>
+</odoo>

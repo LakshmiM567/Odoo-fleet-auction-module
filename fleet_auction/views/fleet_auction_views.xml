@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="fleet_auction_action" model="ir.actions.act_window">
+        <field name="name">Fleet Auction</field>
+        <field name="res_model">fleet.auction</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_draft': 1,
+            'search_default_ongoing':1}</field>
+    </record>
+
+    <record id="view_search_custom" model="ir.ui.view">
+        <field name="name">Custom Search View</field>
+        <field name="model">fleet.auction</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id"/>
+                <field name="name"/>
+                <filter string="Start Date" name="start_date"
+                        date="start_date"/>
+                <filter string="Ongoing" name="ongoing"
+                        domain="[('state', '=','ongoing')]"/>
+                <filter string="Draft" name="draft"
+                        domain="[('state', '=','draft')]" invisible="1"/>
+
+
+                <group expand="0" string="Group By">
+                    <filter string="Customer" name="filter_partner_id"
+                            context="{'group_by': 'partner_id'}"/>
+                </group>
+                <group expand="0" string="Group By">
+                    <filter string="State" name="filter_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="fleet_auction_tree" model="ir.ui.view">
+        <field name="model">fleet.auction</field>
+        <field name="arch" type="xml">
+            <tree string="New Channel">
+                <field name="name"/>
+                <field name="vehicle_name_id"/>
+                <field name="brand_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="responsible_id"/>
+                <field name="start_price"/>
+                <field name="won_price"/>
+                <field name="partner_id"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="fleet_auction_form" model="ir.ui.view">
+        <field name="model">fleet.auction</field>
+        <field name="arch" type="xml">
+            <form string="New Channel">
+                <header>
+                    <button name="action_stop" class="oe_highlight"
+                            string="Stop" type="object"
+                            invisible="state in
+                            ('draft', 'confirmed', 'ongoing', 'cancelled')"/>
+                    <button name="button_confirm" class="oe_highlight"
+                            string="Confirm" type="object"
+                            invisible="state in
+                            ('confirmed','ongoing','success','cancelled')"/>
+                    <button name="button_cancel" class="oe_highlight"
+                            string="Cancel Auction" type="object"
+                            invisible="state in
+                            ('draft','cancelled')"/>
+                    <button name="button_end" class="oe_highlight"
+                            string="End Auction" type="object"
+                            invisible="state in
+                            ('draft','cancelled')"/>
+
+                    <field
+                            name="state"
+                            widget="statusbar"
+                            options="{'clickable': '1'}"
+                            statusbar_visible="draft, confirmed, ongoing,
+                            success"/>
+                </header>
+
+                <sheet>
+                    <div name="button_box">
+                        <button type="object"
+                                icon="fa-taxi"
+                                name="action_get_bid_record">
+                            <field string="Bids" name="bid_count"
+                                   widget="statinfo"/>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <group>
+                        <group>
+                            <field name="vehicle_name_id"/>
+                            <field name="brand_id"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="company_id"/>
+                            <field name="start_price" widget="monetary" />
+                            <field name="won_price"
+                                   invisible="state != 'success'"
+                                   widget="monetary"/>
+                        </group>
+                        <group>
+                            <field name="partner_id"
+                                   context="{'res_partner_search_mode':
+                                   'customer', 'show_address': 1,
+                                   'show_vat': True}"
+                                   invisible="state != 'success'"/>
+                            <field name="phone"
+                                   invisible="state != 'success'"/>
+                            <field name="email"
+                                   invisible="state != 'success'"/>
+                            <field name="responsible_id"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="active" invisible="1"/>
+                            <field name="tags" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description" widget="html"/>
+                        </page>
+                        <page string="Bids">
+                            <field name="fleet_ids" readonly="1">
+                                <tree string="New">
+                                    <field name="auction_id"/>
+                                    <field name="amount"/>
+                                    <field name="price"/>
+                                    <field name="date"/>
+                                    <field name="customer_id"/>
+                                    <field name="phone_number"/>
+                                    <field name="winner"/>
+                                    <field name="status" widget="badge"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                 <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <menuitem id="menu_fleet_auction_root" name="Fleet Auction">
+        <menuitem
+                id="fleet_auction_menu_action"
+                name= "Fleet Auction"
+                action="fleet_auction_action"/>
+    </menuitem>
+</odoo>
